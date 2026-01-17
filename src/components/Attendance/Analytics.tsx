@@ -82,29 +82,51 @@ export default function AnalyticsPage() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch("/api/subjects")
-            .then((r) => r.json())
-            .then((d) => {
+        const loadSubjects = async () => {
+            try {
+                setLoading(true);
+
+                const res = await fetch("/api/subjects");
+                const d = await res.json();
+
                 setSubjects(d);
-                if (d.length) setSubjectId(d[0]._id);
-            });
+
+                if (d.length > 0) {
+                    setSubjectId(d[0]._id);
+                } else {
+                    setLoading(false);
+                }
+            } catch (err) {
+                toast.error("Failed to load subjects");
+                setLoading(false);
+            }
+        };
+
+        loadSubjects();
     }, []);
 
     useEffect(() => {
         if (!subjectId) return;
 
-        fetch(
-            `/api/attendance/analytics?subjectId=${subjectId}&mode=${mode}`
-        )
-            .then((r) => r.json())
-            .then((data) => {
-                setData(data);
-                setLoading(false);
-            })
-            .catch(() => {
+        const loadAnalytics = async () => {
+            try {
+                setLoading(true);
+
+                const res = await fetch(
+                    `/api/attendance/analytics?subjectId=${subjectId}&mode=${mode}`
+                );
+
+                const analyticsData = await res.json();
+
+                setData(analyticsData);
+            } catch (err) {
                 toast.error("Failed to load analytics");
+            } finally {
                 setLoading(false);
-            });
+            }
+        };
+
+        loadAnalytics();
     }, [subjectId, mode]);
 
     const chartData = useMemo(() => {

@@ -48,12 +48,27 @@ export default function AttendanceCalendarPage() {
     /* ---------------- FETCH SUBJECTS ---------------- */
 
     useEffect(() => {
-        fetch("/api/subjects")
-            .then((r) => r.json())
-            .then((data) => {
+        const loadSubjects = async () => {
+            try {
+                setLoading(true);
+
+                const res = await fetch("/api/subjects");
+                const data = await res.json();
+
                 setSubjects(data);
-                if (data.length) setSubjectId(data[0]._id);
-            });
+
+                if (data.length > 0) {
+                    setSubjectId(data[0]._id);
+                } else {
+                    setLoading(false);
+                }
+            } catch (error) {
+                toast.error("Failed to load subjects");
+                setLoading(false);
+            }
+        };
+
+        loadSubjects();
     }, []);
 
     /* ---------------- FETCH ATTENDANCE ---------------- */
@@ -61,16 +76,25 @@ export default function AttendanceCalendarPage() {
     useEffect(() => {
         if (!subjectId) return;
 
-        fetch(`/api/attendance/heatmap?subjectId=${subjectId}`)
-            .then((r) => r.json())
-            .then((d) => {
-                setAttendance(d.days);
-                setLoading(false);
-            })
-            .catch(() => {
+        const loadAttendance = async () => {
+            try {
+                setLoading(true);
+
+                const res = await fetch(
+                    `/api/attendance/heatmap?subjectId=${subjectId}`
+                );
+
+                const d = await res.json();
+
+                setAttendance(d.days || []);
+            } catch (error) {
                 toast.error("Failed to load attendance data");
+            } finally {
                 setLoading(false);
-            });
+            }
+        };
+
+        loadAttendance();
     }, [subjectId]);
 
     /* ---------------- MAP ---------------- */
