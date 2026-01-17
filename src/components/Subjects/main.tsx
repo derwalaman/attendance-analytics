@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { Plus, Pencil, Trash2, X, PlusCircle, BookOpen } from "lucide-react";
 import { toast } from "sonner";
-import Loader from "@/components/ui/Loader";
 
 /* ================= TYPES ================= */
 
@@ -142,34 +141,6 @@ export default function SubjectsPage() {
         fetchSubjects();
     };
 
-    if (loading) {
-        return <Loader />;
-    }
-
-    if (!subjects.length) {
-        return (
-            <div className="min-h-[80vh] flex items-center justify-center px-4">
-                <div className="max-w-md w-full text-center space-y-6">
-
-                    {/* Icon */}
-                    <div className="mx-auto w-20 h-20 rounded-full bg-muted flex items-center justify-center">
-                        <BookOpen size={42} className="text-muted-foreground" />
-                    </div>
-
-                    {/* Text */}
-                    <div className="space-y-2">
-                        <h2 className="text-2xl font-bold">
-                            No Subjects Added
-                        </h2>
-                        <p className="text-muted-foreground text-sm leading-relaxed">
-                            You haven’t added any subjects yet.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
     /* ================= UI ================= */
 
     return (
@@ -194,47 +165,72 @@ export default function SubjectsPage() {
                 </button>
             </div>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {subjects.map((s) => (
-                    <div
-                        key={s._id}
-                        className="rounded-2xl border p-5 bg-background hover:shadow-xl transition flex flex-col justify-between"
-                    >
-                        <div>
-                            <h3 className="font-semibold text-lg">
-                                {s.subjectName}
-                            </h3>
-                            <p className="text-sm text-muted-foreground mt-1">
-                                <span className="font-medium">
-                                    Code:
-                                </span>{" "}
-                                {s.subjectCode || "N/A"}
-                            </p>
-                            <p className="text-sm text-muted-foreground mt-1">
-                                <span className="font-medium">
-                                    Min Attendance:
-                                </span>{" "}
-                                {s.minAttendance}%
-                            </p>
+            {/* LIST */}
+            {loading ? (
+                <p>Loading...</p>
+            ) : subjects.length === 0 ? (
+                <div className="min-h-[80vh] flex items-center justify-center px-4">
+                    <div className="max-w-md w-full text-center space-y-6">
+
+                        {/* Icon */}
+                        <div className="mx-auto w-20 h-20 rounded-full bg-muted flex items-center justify-center">
+                            <BookOpen size={42} className="text-muted-foreground" />
                         </div>
 
-                        <div className="flex justify-end gap-2 mt-4">
-                            <button
-                                onClick={() => openEditModal(s)}
-                                className="p-2 rounded-lg hover:bg-muted"
-                            >
-                                <Pencil size={16} />
-                            </button>
-                            <button
-                                onClick={() => setDeleteTarget(s)}
-                                className="p-2 rounded-lg text-red-600 hover:bg-red-100"
-                            >
-                                <Trash2 size={16} />
-                            </button>
+                        {/* Text */}
+                        <div className="space-y-2">
+                            <h2 className="text-2xl font-bold">
+                                No Subjects Added
+                            </h2>
+                            <p className="text-muted-foreground text-sm leading-relaxed">
+                                You haven’t added any subjects yet.
+                            </p>
                         </div>
                     </div>
-                ))}
-            </div>
+                </div>
+            ) : (
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {subjects.map((s) => (
+                        <div
+                            key={s._id}
+                            className="rounded-2xl border p-5 bg-background hover:shadow-xl transition flex flex-col justify-between"
+                        >
+                            <div>
+                                <h3 className="font-semibold text-lg">
+                                    {s.subjectName}
+                                </h3>
+                                <p className="text-sm text-muted-foreground mt-1">
+                                    <span className="font-medium">
+                                        Code:
+                                    </span>{" "}
+                                    {s.subjectCode || "N/A"}
+                                </p>
+                                <p className="text-sm text-muted-foreground mt-1">
+                                    <span className="font-medium">
+                                        Min Attendance:
+                                    </span>{" "}
+                                    {s.minAttendance}%
+                                </p>
+                            </div>
+
+                            <div className="flex justify-end gap-2 mt-4">
+                                <button
+                                    onClick={() => openEditModal(s)}
+                                    className="p-2 rounded-lg hover:bg-muted"
+                                >
+                                    <Pencil size={16} />
+                                </button>
+                                <button
+                                    onClick={() => setDeleteTarget(s)}
+                                    className="p-2 rounded-lg text-red-600 hover:bg-red-100"
+                                >
+                                    <Trash2 size={16} />
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
 
             {/* ADD / EDIT MODAL */}
             {modalOpen && (
