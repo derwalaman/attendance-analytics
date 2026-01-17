@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Plus, Pencil, Trash2, X, PlusCircle, BookOpen } from "lucide-react";
 import { toast } from "sonner";
+import Loader from "@/components/ui/Loader";
 
 /* ================= TYPES ================= */
 
@@ -140,6 +141,10 @@ export default function SubjectsPage() {
         setDeleteTarget(null);
         fetchSubjects();
     };
+
+    if (loading) {
+        return <Loader />;
+    }
 
     if (!subjects.length) {
         return (

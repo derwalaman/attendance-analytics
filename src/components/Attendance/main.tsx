@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
+import Loader from "@/components/ui/Loader";
 import {
     Plus,
     Pencil,
@@ -16,6 +17,7 @@ import {
     PlusCircle,
     BookOpen,
 } from "lucide-react";
+import { set } from "mongoose";
 
 type Status = "present" | "absent" | "bunk" | "cancelled" | "no_class";
 
@@ -208,6 +210,10 @@ export default function AttendancePage() {
         fetchData();
     };
 
+    if (loading) {
+        return <Loader />;
+    }
+
     if (!subjects.length) {
         return (
             <div className="min-h-[80vh] flex items-center justify-center px-4">
@@ -259,7 +265,7 @@ export default function AttendancePage() {
             {/* HEADER */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold">Attendance</h1>
+                    <h1 className="text-3xl font-bold">Attendance Recorder</h1>
                     <p className="text-muted-foreground mt-1">
                         Add & manage attendance records
                     </p>

@@ -8,6 +8,8 @@ import {
 } from "lucide-react";
 
 import { BookOpen, PlusCircle } from "lucide-react";
+import Loader from "@/components/ui/Loader";
+import { toast } from "sonner";
 
 /* ================= TYPES ================= */
 
@@ -38,6 +40,7 @@ const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 export default function AttendanceCalendarPage() {
     const [subjects, setSubjects] = useState<Subject[]>([]);
     const [subjectId, setSubjectId] = useState("");
+    const [loading, setLoading] = useState(true);
 
     const [attendance, setAttendance] = useState<HeatmapDay[]>([]);
     const [month, setMonth] = useState(new Date());
@@ -60,7 +63,14 @@ export default function AttendanceCalendarPage() {
 
         fetch(`/api/attendance/heatmap?subjectId=${subjectId}`)
             .then((r) => r.json())
-            .then((d) => setAttendance(d.days));
+            .then((d) => {
+                setAttendance(d.days);
+                setLoading(false);
+            })
+            .catch(() => {
+                toast.error("Failed to load attendance data");
+                setLoading(false);
+            });
     }, [subjectId]);
 
     /* ---------------- MAP ---------------- */
@@ -86,6 +96,10 @@ export default function AttendanceCalendarPage() {
         calendar.push(new Date(year, monthIndex, d));
 
     const todayISO = new Date().toISOString().split("T")[0];
+
+    if (loading) {
+        return <Loader />;
+    }
 
     if (!subjects.length) {
         return (

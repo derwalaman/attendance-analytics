@@ -10,6 +10,7 @@ import {
     Building2,
     Sparkles,
 } from "lucide-react";
+import Loader from "@/components/ui/Loader";
 
 interface ProfileData {
     user: any;
@@ -54,7 +55,11 @@ export default function ProfilePage() {
         fetchProfile();
     };
 
-    if (loading || !data) return null;
+    // if (loading || !data) return null;
+
+    if (loading || !data) {
+        return <Loader />;
+    }
 
     const { user, completion, hasSubjects } = data;
 

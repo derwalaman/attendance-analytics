@@ -2,6 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
+import Loader from "@/components/ui/Loader";
 
 import {
     BookOpen,
@@ -78,6 +79,7 @@ export default function AnalyticsPage() {
     const [subjectId, setSubjectId] = useState("");
     const [mode, setMode] = useState<Mode>("bunk_absent");
     const [data, setData] = useState<Analytics | null>(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         fetch("/api/subjects")
@@ -95,8 +97,14 @@ export default function AnalyticsPage() {
             `/api/attendance/analytics?subjectId=${subjectId}&mode=${mode}`
         )
             .then((r) => r.json())
-            .then(setData)
-            .catch(() => toast.error("Failed to load analytics"));
+            .then((data) => {
+                setData(data);
+                setLoading(false);
+            })
+            .catch(() => {
+                toast.error("Failed to load analytics");
+                setLoading(false);
+            });
     }, [subjectId, mode]);
 
     const chartData = useMemo(() => {
@@ -126,6 +134,10 @@ export default function AnalyticsPage() {
             bg: "bg-red-100",
         },
     }[data?.status || "Safe"];
+
+    if (loading) {
+        return <Loader />;
+    }
 
     if (!subjects.length) {
         return (
